@@ -8,6 +8,9 @@ import { store } from './store'
 import { Provider } from 'react-redux'
 
 import Splash from "./screens/Splash";
+import Login from "./screens/Login";
+import Home from "./screens/Home";
+import Options from "./screens/Options";
 
 const Stack = createNativeStackNavigator();
 
@@ -19,6 +22,9 @@ export default function App() {
 			<NavigationContainer>
 				<Stack.Navigator>
 					<Stack.Screen name="splash" component={Splash} options={{headerShown:false}}/>
+					<Stack.Screen name="login" component={Login} options={{headerShown:false}}/>
+					<Stack.Screen name="home" component={Home} options={{headerShown:false}}/>
+					<Stack.Screen name="options" component={Options} options={{}}/>
 				</Stack.Navigator>
 			</NavigationContainer>
 		</SafeAreaProvider>
