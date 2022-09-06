@@ -20,6 +20,9 @@ const Header=()=>{
 			
 			<TouchableOpacity className="w-8 h-8 rounded-full items-center justify-center mr-1" 
 			style={{backgroundColor:stc(auth?.currentUser?.email)}}
+			onPress={()=>{
+				auth?.signOut();
+			}}
 			>
 				<Text className="text-white">{auth?.currentUser?.email[0].toLowerCase()}</Text>
 			</TouchableOpacity>

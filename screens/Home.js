@@ -12,14 +12,21 @@ import {setMouvements,selectMouvements,setDate,setPointsVentes,setTransferts,set
 selectUsers,
 selectClients,
 setUsers,
-setClients
+setClients,
+setCurrentData,
+setVentesOptions,
+selectDate,
 } from "../slices";
 import Operation from "../components/Operation";
+
+import moment from "moment";
+
 
 const Home=({navigation})=>{
 	
 		const dispatch=useDispatch();
 		const m=useSelector(selectMouvements);
+		const date=useSelector(selectDate);
 		
 		const [refreshing, set_refreshing] = useState(false);
 		const [data,set_data]=useState([]);
@@ -36,7 +43,7 @@ const Home=({navigation})=>{
 			users,
 			clients
 			*/
-			
+			dispatch(setDate(null))
 			await request("mouvements",setMouvements);
 			await request("users",setUsers);
 			await request("clients",setClients);
@@ -46,6 +53,7 @@ const Home=({navigation})=>{
 			await request("depenses",setDepenses);
 			await request("retrait",setRetraits);
 			await request("points_vente",setPointsVentes);
+			await request("ventes_options",setVentesOptions);
 			
 			
 			
@@ -73,14 +81,29 @@ const Home=({navigation})=>{
 		
 		useEffect(()=>{
 			if(m==null) return;
-			set_data(m);
-		},[m])
+			if(date!=null){
+				const res=m?.filter((item)=>{
+					const d=moment(item?.date).format("ll");
+					return d==date;
+				})
+				set_data(res)
+			}else{
+				set_data(m);
+			}
+			
+			
+		},[m,date])
+		
+		useEffect(()=>{
+			dispatch(setCurrentData(data))
+		},[data])
 		
 	return (
 		<SafeAreaView className="flex-1">
 			<Header />
 			<Filter />
-			<FlatList 
+			{(data!=null && data?.length==0) && <Text className="text-center mt-4">Aucune opération nest trouvée.</Text>}
+			{(data!=null  )&&<FlatList 
 			data={data}
 			keyExtractor={(item)=>item.id}
 			renderItem={({item})=>{
@@ -89,7 +112,7 @@ const Home=({navigation})=>{
 			
 			refreshControl={<RefreshControl refreshing={refreshing} onRefresh={load_data} />}
 
-			/>
+			/>}
 			
 			<Footer />
 		</SafeAreaView>

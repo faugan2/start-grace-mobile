@@ -12,6 +12,8 @@ const initialState = {
   filtre:null,
   users:null,
   clients:null,
+  ventesOptions:null,
+  currentData:null,
 }
 
 export const counterSlice = createSlice({
@@ -58,7 +60,14 @@ export const counterSlice = createSlice({
 	},
 	setClients:(state,action)=>{
 		state.clients=action.payload;
-	}
+	},
+	setVentesOptions:(state,action)=>{
+		state.ventesOptions=action.payload;
+	},
+	
+	setCurrentData:(state,action)=>{
+		state.currentData=action.payload;
+	},
 	
 	
   },
@@ -67,6 +76,8 @@ export const counterSlice = createSlice({
 export const { setMouvements,setDate,setPointsVentes,setTransferts,setDepenses,setFormats,setFiltre,setStock,setRetraits,
 setUsers,
 setClients,
+setVentesOptions,
+setCurrentData
  } = counterSlice.actions
 
 export const selectMouvements = (state) => state.counter.mouvements
@@ -80,5 +91,7 @@ export const selectStock = (state) => state.counter.stock
 export const selectRetraits = (state) => state.counter.retraits
 export const selectUsers = (state) => state.counter.users
 export const selectClients = (state) => state.counter.clients
+export const selectVentesOptions = (state) => state.counter.ventesOptions
+export const selectCurrentData = (state) => state.counter.currentData
 
 export default counterSlice.reducer

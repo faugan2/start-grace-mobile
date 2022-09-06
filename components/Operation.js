@@ -9,6 +9,8 @@ import moment from "moment";
 import 'moment/locale/fr'
 import {get_nom_pv} from "./functions";
 
+let decode = require('html-entities-decoder')
+
 const Operation=({line})=>{
 	const p=useSelector(selectStock);
 	const f=useSelector(selectFormats);
@@ -36,8 +38,8 @@ const Operation=({line})=>{
 		type="Entrée";
 		sortie=false;
 	}else if(token==2){
-		type="Vente";
-		sortie=false;
+		type="Sorite";
+		sortie=true;
 	}else if(token==3){
 		type="Bris";
 		sortie=true;
@@ -52,6 +54,9 @@ const Operation=({line})=>{
 			a=tr[0].a;
 		}
 		
+	}else{
+		type="Vente";
+		sortie=false;
 	}
 	
 	const token_user=line?.user;
@@ -59,7 +64,7 @@ const Operation=({line})=>{
 		return item.token_id==token_user;
 	})[0]
 	
-	const username=user_info.nom
+	const username=decode(user_info.nom)
 	const token_pv=user_info.point_vente;
 	let str_pv="";
 	if(token_pv=="-"){
@@ -74,19 +79,27 @@ const Operation=({line})=>{
 	const total_m2=line?.total_m2;
 	const total_pieces=line?.total_pieces;
 	
-	const unite=line?.unite;
-	const qte=parseFloat(line?.qte);
+	const unite=decode(line?.unite);
+	let qte=parseFloat(line?.qte);
+	if(unite=="m2"){
+		qte=parseFloat(total_m2)
+	}else if(unite=="Carton"){
+		qte=parseFloat(total_cartons);
+	}else if(unite=="Pièce"){
+		qte=parseFloat(total_pieces);
+	}
+	//qte=Math.abs(qte);
 	const pu=parseFloat(line?.prix);
-	const value=qte*pu;
+	const value=Math.abs(qte*pu);
 	
 	let str_du="";
 	let str_a="";
 	if(du!=""){
-		str_du=get_nom_pv(du,pv);
+		str_du=decode(get_nom_pv(du,pv));
 	}
 	
 	if(a!=""){
-		str_a=get_nom_pv(a,pv);
+		str_a=decode(get_nom_pv(a,pv));
 	}
 	
 	if(token==4){
@@ -105,7 +118,7 @@ const Operation=({line})=>{
 				<Text className="text-white">{type[0]}</Text>
 			</TouchableOpacity>
 			<View className="flex-1">
-				<Text className="text-sm font-semibold">{nom} / {nom_format}</Text>
+				<Text className="text-sm font-semibold">{decode(nom)} / {decode(nom_format)}</Text>
 				<Text className="text-xs text-gray-400" numberOfLines={1} ellipSizeMode="tail">{str_pv}</Text>
 				<Text className="text-xs text-gray-400">{username.toUpperCase()}</Text>
 				{(token==4 && qte<0) && <Text className="text-xs text-gray-400" numberOfLines={1} ellipSizeMode="tail">Transfert envoyé a : {str_a}</Text>}
@@ -114,7 +127,7 @@ const Operation=({line})=>{
 			</View>
 			
 			<View className="items-center ml-2">
-				<Text className="text-xs text-gray-400">{qte} {unite}</Text>
+				<Text className="text-xs text-gray-400">{Math.abs(qte)} {decode(unite)}</Text>
 				<Text className={`text-xs ${sortie==true ? 'text-red-400' : 'text-green-700'} `}>{currencyFormatter.format(value,{code:"xof",decimal:".",precision:0})} Fr</Text>
 			</View>
 			
