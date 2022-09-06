@@ -24,9 +24,14 @@ const Operation=({line})=>{
 		return item.token_id==line?.produit;
 	})[0];
 	
-	const nom_format=f?.filter((item)=>{
+	const res_nom_format=f?.filter((item)=>{
 		return item.token_id==format;
-	})[0].nom
+	})
+	
+	let nom_format="";
+	if(res_nom_format?.length>0){
+		nom_format=res_nom_format[0].nom;
+	}
 	
 	var type="";
 	let du="";
